@@ -63,6 +63,13 @@
                 birdPosition += gravity;
                 bird.style.top = birdPosition + 'px';
 
+                // Cek tabrakan dengan batas atas dan bawah
+                if (birdPosition <= 0 || birdPosition >= gameContainer.clientHeight - bird.clientHeight) {
+                    alert('Game Over');
+                    resetGame();
+                    return;
+                }
+
                 // Cek tabrakan dengan rintangan
                 if (isColliding(bird, pipeTop) || isColliding(bird, pipeBottom)) {
                     alert('Game Over');
@@ -73,7 +80,7 @@
                 // Pergerakan rintangan
                 const pipePosition = parseInt(pipeTop.style.left);
                 if (pipePosition <= -80) {
-                    const randomHeight = Math.random() * 200 + 50;
+                    const randomHeight = Math.random() * (gameContainer.clientHeight - 150 - 50) + 50;
                     pipeTop.style.height = randomHeight + 'px';
                     pipeBottom.style.height = (gameContainer.clientHeight - randomHeight - 150) + 'px';
                     pipeTop.style.left = '400px';
