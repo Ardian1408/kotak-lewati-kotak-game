@@ -23,16 +23,16 @@
         .pipe {
             position: absolute;
             width: 80px;
-            height: 300px;
             background-color: green;
+            transition: top 0.3s linear;
         }
 
         #pipe-top {
-            top: 0;
+            top: -300px;
         }
 
         #pipe-bottom {
-            bottom: 0;
+            bottom: -300px;
         }
     </style>
 </head>
@@ -71,14 +71,16 @@
                 }
 
                 // Pergerakan rintangan
-                const pipePosition = parseInt(pipeTop.style.right);
+                const pipePosition = parseInt(pipeTop.style.left);
                 if (pipePosition <= -80) {
                     const randomHeight = Math.random() * 200 + 50;
                     pipeTop.style.height = randomHeight + 'px';
                     pipeBottom.style.height = (gameContainer.clientHeight - randomHeight - 150) + 'px';
+                    pipeTop.style.left = '400px';
+                    pipeBottom.style.left = '400px';
                 }
-                pipeTop.style.right = (pipePosition + gameSpeed) + 'px';
-                pipeBottom.style.right = (pipePosition + gameSpeed) + 'px';
+                pipeTop.style.left = (pipePosition - gameSpeed) + 'px';
+                pipeBottom.style.left = (pipePosition - gameSpeed) + 'px';
 
                 requestAnimationFrame(gameLoop);
             }
@@ -97,8 +99,8 @@
             function resetGame() {
                 birdPosition = 50;
                 bird.style.top = birdPosition + 'px';
-                pipeTop.style.right = '0';
-                pipeBottom.style.right = '0';
+                pipeTop.style.left = '400px';
+                pipeBottom.style.left = '400px';
                 gameRunning = false;
             }
 
