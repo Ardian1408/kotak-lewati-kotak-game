@@ -66,7 +66,7 @@
                 pipeLower.style.left = lastPipePosition + 'px';
                 gameContainer.appendChild(pipeLower);
 
-                lastPipePosition += 200; // Menambahkan jarak antara pipa yang baru dibuat
+                lastPipePosition += 150 + Math.random() * 200; // Menambahkan jarak antara pipa yang baru dibuat
             }
 
             function gameLoop() {
@@ -102,6 +102,11 @@
                             // Menghitung skor ketika burung berhasil melewati pipa
                             // Anda dapat menambahkan logika lain untuk mengatur skor sesuai dengan kebutuhan permainan Anda
                             console.log('Scored!');
+
+                            if (pipe.classList.contains('pipe-upper')) {
+                                const nextGapTop = Math.random() * (gameContainer.clientHeight - gapHeight);
+                                createPipe(nextGapTop, gapHeight);
+                            }
                         }
                     }
                 });
