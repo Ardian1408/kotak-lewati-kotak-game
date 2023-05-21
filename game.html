@@ -49,9 +49,18 @@
             let birdPosition = 50;
             let gravity = 2;
             let gameSpeed = 2;
-            let gapHeight = 200; // Lebar lubang di antara dua pipa
+            let gapHeight = 150; // Lebar lubang di antara dua pipa
             let lastPipePosition = 400; // Posisi terakhir dari pipa yang telah dibuat
             let gameRunning = false; // Menandakan apakah permainan sedang berjalan
+            let passedPipes = 0; // Jumlah pipa yang berhasil dilewati
+            let pipes = []; // Array untuk menyimpan pipa-pipa yang ada
+
+            function createPipes() {
+                for (let i = 0; i < 100; i++) {
+                    const gapTop = Math.random() * (gameContainer.clientHeight - gapHeight);
+                    createPipe(gapTop, gapHeight);
+                }
+            }
 
             function createPipe(height, gapTop) {
                 const pipeUpper = document.createElement('div');
@@ -66,7 +75,13 @@
                 pipeLower.style.left = lastPipePosition + 'px';
                 gameContainer.appendChild(pipeLower);
 
-                lastPipePosition += 150 + Math.random() * 200; // Menambahkan jarak antara pipa yang baru dibuat
+                pipes.push({
+                    upper: pipeUpper,
+                    lower: pipeLower,
+                    passed: false
+                });
+
+                lastPipePosition += 200; // Jarak antara pipa-pipa (diperbesar menjadi 200)
             }
 
             function gameLoop() {
@@ -84,37 +99,33 @@
                     return;
                 }
 
-                const pipes = document.querySelectorAll('.pipe');
-                pipes.forEach(pipe => {
-                    const pipePosition = parseInt(pipe.style.left);
+                pipes.forEach((pipe, index) => {
+                    const pipePosition = parseInt(pipe.upper.style.left);
                     if (pipePosition <= -80) {
-                        gameContainer.removeChild(pipe);
+                        gameContainer.removeChild(pipe.upper);
+                        gameContainer.removeChild(pipe.lower);
+                        pipes.splice(index, 1); // Menghapus pipa dari array
                     } else {
-                        pipe.style.left = (pipePosition - gameSpeed) + 'px';
+                        pipe.upper.style.left = (pipePosition - gameSpeed) + 'px';
+                        pipe.lower.style.left = (pipePosition - gameSpeed) + 'px';
 
-                        if (isColliding(bird, pipe)) {
+                        if (isColliding(bird, pipe.upper) || isColliding(bird, pipe.lower)) {
                             alert('Game Over');
                             resetGame();
                             return;
                         }
 
-                        if (pipePosition + pipe.clientWidth === bird.offsetLeft) {
-                            // Menghitung skor ketika burung berhasil melewati pipa
-                            // Anda dapat menambahkan logika lain untuk mengatur skor sesuai dengan kebutuhan permainan Anda
-                            console.log('Scored!');
+                        if (!pipe.passed && pipePosition + pipe.upper.clientWidth <= bird.offsetLeft) {
+                            pipe.passed = true;
+                            passedPipes++;
 
-                            if (pipe.classList.contains('pipe-upper')) {
-                                const nextGapTop = Math.random() * (gameContainer.clientHeight - gapHeight);
-                                createPipe(nextGapTop, gapHeight);
+                            // Setelah melewati pipa pertama, tambahkan pipa-pipa lainnya
+                            if (passedPipes === 1) {
+                                createPipes();
                             }
                         }
                     }
                 });
-
-                if (lastPipePosition <= gameContainer.clientWidth) {
-                    const gapTop = Math.random() * (gameContainer.clientHeight - gapHeight);
-                    createPipe(gapTop, gapHeight);
-                }
 
                 requestAnimationFrame(gameLoop);
             }
@@ -133,10 +144,14 @@
             function resetGame() {
                 birdPosition = 50;
                 bird.style.top = birdPosition + 'px';
-                const pipes = document.querySelectorAll('.pipe');
-                pipes.forEach(pipe => gameContainer.removeChild(pipe));
+                pipes.forEach(pipe => {
+                    gameContainer.removeChild(pipe.upper);
+                    gameContainer.removeChild(pipe.lower);
+                });
+                pipes = [];
                 lastPipePosition = 400;
                 gameRunning = false;
+                passedPipes = 0;
             }
 
             document.addEventListener('keydown', (event) => {
