@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flappy Bird Game</title>
+    <style>
+        #game-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            border: 1px solid black;
+            overflow: hidden;
+        }
+
+        #bird {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+        }
+
+        .pipe {
+            position: absolute;
+            width: 80px;
+            height: 300px;
+            background-color: green;
+        }
+
+        #pipe-top {
+            top: 0;
+        }
+
+        #pipe-bottom {
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="bird"></div>
+        <div id="pipe-top" class="pipe"></div>
+        <div id="pipe-bottom" class="pipe"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bird = document.getElementById('bird');
+            const pipeTop = document.getElementById('pipe-top');
+            const pipeBottom = document.getElementById('pipe-bottom');
+            const gameContainer = document.getElementById('game-container');
+
+            let birdPosition = 50;
+            let gravity = 2;
+            let gameSpeed = 2;
+            let gameRunning = false; // Menandakan apakah permainan sedang berjalan
+
+            function gameLoop() {
+                if (!gameRunning) {
+                    return;
+                }
+
+                birdPosition += gravity;
+                bird.style.top = birdPosition + 'px';
+
+                // Cek tabrakan dengan rintangan
+                if (isColliding(bird, pipeTop) || isColliding(bird, pipeBottom)) {
+                    alert('Game Over');
+                    resetGame();
+                    return;
+                }
+
+                // Pergerakan rintangan
+                const pipePosition = parseInt(pipeTop.style.right);
+                if (pipePosition <= -80) {
+                    const randomHeight = Math.random() * 200 + 50;
+                    pipeTop.style.height = randomHeight + 'px';
+                    pipeBottom.style.height = (gameContainer.clientHeight - randomHeight - 150) + 'px';
+                }
+                pipeTop.style.right = (pipePosition + gameSpeed) + 'px';
+                pipeBottom.style.right = (pipePosition + gameSpeed) + 'px';
+
+                requestAnimationFrame(gameLoop);
+            }
+
+            function isColliding(element1, element2) {
+                const rect1 = element1.getBoundingClientRect();
+                const rect2 = element2.getBoundingClientRect();
+                return (
+                    rect1.top < rect2.bottom &&
+                    rect1.bottom > rect2.top &&
+                    rect1.left < rect2.right &&
+                    rect1.right > rect2.left
+                );
+            }
+
+            function resetGame() {
+                birdPosition = 50;
+                bird.style.top = birdPosition + 'px';
+                pipeTop.style.right = '0';
+                pipeBottom.style.right = '0';
+                gameRunning = false;
+            }
+
+            document.addEventListener('keydown', (event) => {
+                if (!gameRunning && (event.code === 'Space' || event.code === 'ArrowUp')) {
+                    gameRunning = true;
+                    gameLoop();
+                } else if (gameRunning && (event.code === 'Space' || event.code === 'ArrowUp')) {
+                    birdPosition -= 50;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
