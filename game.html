@@ -49,6 +49,7 @@
             let birdPosition = 50;
             let gravity = 2;
             let gameSpeed = 2;
+            let gapHeight = 200; // Lebar lubang di antara dua pipa
             let gameRunning = false; // Menandakan apakah permainan sedang berjalan
 
             function createPipe(height, gapTop) {
@@ -97,8 +98,7 @@
                 });
 
                 if (gameContainer.clientWidth % 150 === 0) {
-                    const gapTop = Math.random() * (gameContainer.clientHeight - 200) + 50;
-                    const gapHeight = 100;
+                    const gapTop = Math.random() * (gameContainer.clientHeight - gapHeight);
                     createPipe(gapTop, gapHeight);
                 }
 
@@ -127,7 +127,7 @@
             document.addEventListener('keydown', (event) => {
                 if (!gameRunning && (event.code === 'Space' || event.code === 'ArrowUp')) {
                     gameRunning = true;
-                    createPipe(200, 100);
+                    createPipe(200, gapHeight);
                     gameLoop();
                 } else if (gameRunning && (event.code === 'Space' || event.code === 'ArrowUp')) {
                     birdPosition -= 50;
